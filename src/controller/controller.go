@@ -7,13 +7,22 @@ import (
 	"net/http"
 	"strconv"
 	"studentReports/src/model"
-	"studentReports/src/repo"
 )
-type Controller struct {
-	studentRepo *repo.StudentRepo
+
+type StudentRepoOperations interface {
+	GetStudents() []model.Student
+	GetStudentInfo(id int) model.Student
+	CreateStudentInfo(student model.Student) model.Student
+	UpdateStudentInfo(id int, stud model.Student) model.Student
+	RemoveStudentInfo(id int)
+	GetResultInfo() []model.Student
 }
 
-func NewController(sr *repo.StudentRepo)*Controller{
+type Controller struct {
+	studentRepo StudentRepoOperations
+}
+
+func NewController(sr StudentRepoOperations)*Controller{
 	return &Controller{
 		studentRepo: sr,
 	}
