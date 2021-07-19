@@ -3,8 +3,8 @@ package repo
 import (
 	"database/sql"
 	"fmt"
-	"sort"
 	"studentReports/src/model"
+	"studentReports/src/resultCalculator"
 )
 
 type StudentRepo struct {
@@ -69,7 +69,6 @@ func (studRepo StudentRepo)GetResultInfo() []model.Student{
 	var studList []model.Student
 	var stud model.Student
 
-
 	rows, err:= studRepo.db.Query("SELECT * FROM studs")
 	if err!=nil{
 		fmt.Errorf("Failed to execute select %v", err)
@@ -77,26 +76,15 @@ func (studRepo StudentRepo)GetResultInfo() []model.Student{
 
 	for rows.Next(){
 		rows.Scan(&stud.ID, &stud.Name, &stud.Subject1, &stud.Subject2, &stud.Total, &stud.Avg, &stud.Rank)
-		stud.Total = stud.Subject1 + stud.Subject2
-		stud.Avg = float32(stud.Total / 2)
 		studList = append(studList, stud)
 	}
 
-	studList= sortList(studList)
-	for i:=0;i< len(studList);i++{
-		studList[i].Rank = i+1
-	}
+	studData:=resultCalculator.CalculateRank(studList)
 
-	studRepo.insertStudentInfo(studList)
-	return studList
+	studRepo.insertStudentInfo(studData)
+	return studData
 }
 
-func sortList(studList []model.Student) []model.Student{
-	sort.SliceStable(studList, func(i, j int) bool {
-		return studList[i].Avg > studList[j].Avg
-	})
-	return studList
-}
 
 func (studRepo StudentRepo)insertStudentInfo(studList []model.Student){
 
