@@ -9,16 +9,25 @@ import (
 	"studentReports/src/model"
 	"studentReports/src/repo"
 )
+type Controller struct {
+	studentRepo *repo.StudentRepo
+}
 
-func getAllStudentList(w http.ResponseWriter, r *http.Request){
+func NewController(sr *repo.StudentRepo)*Controller{
+	return &Controller{
+		studentRepo: sr,
+	}
+}
+
+func (ctrl Controller)getAllStudentList(w http.ResponseWriter, r *http.Request){
 
   	var studentList []model.Student
-	studentList = repo.GetStudents()
+	studentList = ctrl.studentRepo.GetStudents()
 	json.NewEncoder(w).Encode(studentList)
 	w.WriteHeader(http.StatusOK)
 }
 
-func getStudent(w http.ResponseWriter, r *http.Request){
+func (ctrl Controller)getStudent(w http.ResponseWriter, r *http.Request){
 	param:=mux.Vars(r)
 	id,err := strconv.Atoi(param["id"])
 	if err!=nil{
@@ -27,7 +36,7 @@ func getStudent(w http.ResponseWriter, r *http.Request){
 
 	var student model.Student
 
-	student = repo.GetStudentInfo(id)
+	student = ctrl.studentRepo.GetStudentInfo(id)
 
 	if student.ID!=0	{
 	json.NewEncoder(w).Encode(student)
@@ -37,18 +46,18 @@ func getStudent(w http.ResponseWriter, r *http.Request){
 	}
 }
 
-func createStudent(w http.ResponseWriter, r *http.Request){
+func (ctrl Controller)createStudent(w http.ResponseWriter, r *http.Request){
 
 	var student model.Student
 	var newStudent model.Student
 	json.NewDecoder(r.Body).Decode(&student)
 
-	newStudent = repo.CreateStudentInfo(student)
+	newStudent = ctrl.studentRepo.CreateStudentInfo(student)
 	json.NewEncoder(w).Encode(newStudent)
 	w.WriteHeader(http.StatusCreated)
 }
 
-func updateStudent(w http.ResponseWriter, r *http.Request){
+func (ctrl Controller)updateStudent(w http.ResponseWriter, r *http.Request){
 
 	var stud model.Student
 	var studUpdated model.Student
@@ -60,13 +69,13 @@ func updateStudent(w http.ResponseWriter, r *http.Request){
 
 	json.NewDecoder(r.Body).Decode(&stud)
 
-	studUpdated = repo.UpdateStudentInfo(id, stud)
+	studUpdated = ctrl.studentRepo.UpdateStudentInfo(id, stud)
 
 	json.NewEncoder(w).Encode(studUpdated)
 	w.WriteHeader(http.StatusOK)
 }
 
-func removeStudent(w http.ResponseWriter, r *http.Request){
+func (ctrl Controller)removeStudent(w http.ResponseWriter, r *http.Request){
 
 	param:=mux.Vars(r)
 	id,err:=strconv.Atoi(param["id"])
@@ -74,13 +83,13 @@ func removeStudent(w http.ResponseWriter, r *http.Request){
 		fmt.Errorf("Failed to convert %v", err)
 	}
 
-	repo.RemoveStudentInfo(id)
+	ctrl.studentRepo.RemoveStudentInfo(id)
 	w.WriteHeader(http.StatusOK)
 }
 
-func getResult(w http.ResponseWriter, r *http.Request) {
+func (ctrl Controller)getResult(w http.ResponseWriter, r *http.Request) {
 	var studList []model.Student
-	studList = repo.GetResultInfo()
+	studList = ctrl.studentRepo.GetResultInfo()
 
 	json.NewEncoder(w).Encode(studList)
 	w.WriteHeader(http.StatusOK)

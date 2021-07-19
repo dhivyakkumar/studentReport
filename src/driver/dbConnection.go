@@ -13,7 +13,6 @@ func init()  {
 	gotenv.Load()
 }
 
-var DB *sql.DB
 func OpenDBConnection() *sql.DB{
 	fmt.Println("Connecting to DB!!!")
 
@@ -22,12 +21,12 @@ func OpenDBConnection() *sql.DB{
 		fmt.Errorf("Failed to parse file", err)
 	}
 
-	DB, _ = sql.Open("postgres", pgURL)
+	db, _ := sql.Open("postgres", pgURL)
 
-	err= DB.Ping()
+	err= db.Ping()
 	if err!=nil{
 		fmt.Errorf("Failed to ping db", err)
 	}
 
-	return DB
+	return db
 }

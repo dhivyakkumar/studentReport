@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"studentReports/src/controller"
 	"studentReports/src/driver"
+	"studentReports/src/repo"
 )
 
 
@@ -12,10 +13,13 @@ import (
 func main(){
 
 	fmt.Println("Starting the server")
-
-
-	r:=controller.Router()
 	db:= driver.OpenDBConnection()
+
+	studentRepo:=repo.NewStudentRepo(db)
+	c:=controller.NewController(studentRepo)
+	r:=controller.Router(c)
+
 	defer db.Close()
+
 	http.ListenAndServe(":8081",r)
 }
