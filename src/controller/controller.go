@@ -10,12 +10,12 @@ import (
 )
 
 type StudentRepoOperations interface {
-	GetStudents() []model.Student
-	GetStudentInfo(id int) model.Student
-	CreateStudentInfo(student model.Student) model.Student
-	UpdateStudentInfo(id int, stud model.Student) model.Student
-	RemoveStudentInfo(id int)
-	GetResultInfo() []model.Student
+	GetStudents() ([]model.Student,error)
+	GetStudentInfo(id int) (model.Student,error)
+	CreateStudentInfo(student model.Student) (model.Student,error)
+	UpdateStudentInfo(id int, stud model.Student) (model.Student,error)
+	RemoveStudentInfo(id int) error
+	GetResultInfo() ([]model.Student,error)
 }
 
 type Controller struct {
@@ -30,8 +30,11 @@ func NewController(sr StudentRepoOperations)*Controller{
 
 func (ctrl Controller)getAllStudentList(w http.ResponseWriter, r *http.Request){
 
-  	var studentList []model.Student
-	studentList = ctrl.studentRepo.GetStudents()
+	studentList,err := ctrl.studentRepo.GetStudents()
+	if err!=nil{
+		fmt.Errorf("Failed to get students info %v", err)
+	}
+
 	json.NewEncoder(w).Encode(studentList)
 	w.WriteHeader(http.StatusOK)
 }
@@ -40,12 +43,15 @@ func (ctrl Controller)getStudent(w http.ResponseWriter, r *http.Request){
 	param:=mux.Vars(r)
 	id,err := strconv.Atoi(param["id"])
 	if err!=nil{
-		fmt.Errorf("Failed to convert type", err)
+		fmt.Errorf("Failed to convert type %v", err)
 	}
 
 	var student model.Student
 
-	student = ctrl.studentRepo.GetStudentInfo(id)
+	student,err = ctrl.studentRepo.GetStudentInfo(id)
+	if err!=nil{
+		fmt.Errorf("Failed to get student info %v", err)
+	}
 
 	if student.ID!=0	{
 	json.NewEncoder(w).Encode(student)
@@ -58,10 +64,13 @@ func (ctrl Controller)getStudent(w http.ResponseWriter, r *http.Request){
 func (ctrl Controller)createStudent(w http.ResponseWriter, r *http.Request){
 
 	var student model.Student
-	var newStudent model.Student
 	json.NewDecoder(r.Body).Decode(&student)
 
-	newStudent = ctrl.studentRepo.CreateStudentInfo(student)
+	newStudent,err := ctrl.studentRepo.CreateStudentInfo(student)
+	if err!=nil{
+		fmt.Errorf("Failed to create student info %v", err)
+	}
+
 	json.NewEncoder(w).Encode(newStudent)
 	w.WriteHeader(http.StatusCreated)
 }
@@ -78,7 +87,10 @@ func (ctrl Controller)updateStudent(w http.ResponseWriter, r *http.Request){
 
 	json.NewDecoder(r.Body).Decode(&stud)
 
-	studUpdated = ctrl.studentRepo.UpdateStudentInfo(id, stud)
+	studUpdated,err = ctrl.studentRepo.UpdateStudentInfo(id, stud)
+	if err!=nil{
+		fmt.Errorf("Failed to update student info %v", err)
+	}
 
 	json.NewEncoder(w).Encode(studUpdated)
 	w.WriteHeader(http.StatusOK)
@@ -92,13 +104,20 @@ func (ctrl Controller)removeStudent(w http.ResponseWriter, r *http.Request){
 		fmt.Errorf("Failed to convert %v", err)
 	}
 
-	ctrl.studentRepo.RemoveStudentInfo(id)
+	err=ctrl.studentRepo.RemoveStudentInfo(id)
+	if err!=nil{
+		fmt.Errorf("Failed to remove student info %v", err)
+	}
+
 	w.WriteHeader(http.StatusOK)
 }
 
 func (ctrl Controller)getResult(w http.ResponseWriter, r *http.Request) {
 	var studList []model.Student
-	studList = ctrl.studentRepo.GetResultInfo()
+	studList,err := ctrl.studentRepo.GetResultInfo()
+	if err!=nil{
+		fmt.Errorf("Failed to get student result info %v", err)
+	}
 
 	json.NewEncoder(w).Encode(studList)
 	w.WriteHeader(http.StatusOK)
