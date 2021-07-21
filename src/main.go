@@ -8,18 +8,15 @@ import (
 	"studentReports/src/repo"
 )
 
-
-
-func main(){
+func main() {
 
 	fmt.Println("Starting the server")
-	db:= driver.OpenDBConnection()
-
-	studentRepo:=repo.NewStudentRepo(db)
-	c:=controller.NewController(studentRepo)
-	r:=controller.Router(c)
+	db := driver.OpenDBConnection()
+	studentRepo := repo.NewStudentRepo(db)
+	c := controller.NewController(studentRepo)
+	r := controller.Router(c)
 
 	defer db.Close()
 
-	http.ListenAndServe(":8081",r)
+	http.ListenAndServe(":8081", r)
 }

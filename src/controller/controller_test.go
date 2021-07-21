@@ -7,104 +7,81 @@ import (
 	"testing"
 )
 
-func Test_Control(t *testing.T){
+func Test_Control(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+	Stud := NewMockStudentRepoOperations(ctrl)
+
 	t.Run("successfully get students info", func(t *testing.T) {
-		ctrl:= gomock.NewController(t)
-		defer ctrl.Finish()
-
-		Stud:=NewMockStudentRepoOperations(ctrl)
-		ExpectedRes:=StudentsResponse()
-		Stud.EXPECT().GetStudents().Return(ExpectedRes,nil)
-
-		controller:=Controller{
+		ExpectedRes := StudentsResponse()
+		Stud.EXPECT().GetStudents().Return(ExpectedRes, nil)
+		controller := Controller{
 			studentRepo: Stud,
 		}
 
-		ActualResp,err:=controller.studentRepo.GetStudents()
+		ActualResp, err := controller.studentRepo.GetStudents()
 
-		require.NoError(t,err)
+		require.NoError(t, err)
 		require.Equal(t, ExpectedRes, ActualResp)
 	})
 
 	t.Run("successfully get student info", func(t *testing.T) {
-		ctrl:= gomock.NewController(t)
-		defer ctrl.Finish()
-
-		Stud:=NewMockStudentRepoOperations(ctrl)
-		ExpectedRes:=StudentStruct()
-		id:=1
-		Stud.EXPECT().GetStudentInfo(id).Return(ExpectedRes,nil)
-
-		controller:=Controller{
+		ExpectedRes := StudentStruct()
+		id := 1
+		Stud.EXPECT().GetStudentInfo(id).Return(ExpectedRes, nil)
+		controller := Controller{
 			studentRepo: Stud,
 		}
 
+		ActualResp, err := controller.studentRepo.GetStudentInfo(id)
 
-		ActualResp,err:=controller.studentRepo.GetStudentInfo(id)
-
-		require.NoError(t,err)
+		require.NoError(t, err)
 		require.Equal(t, ExpectedRes, ActualResp)
 	})
 
 	t.Run("successfully create student info", func(t *testing.T) {
-		ctrl:= gomock.NewController(t)
-		defer ctrl.Finish()
-
-		Stud:=NewMockStudentRepoOperations(ctrl)
-		ExpectedRes:=StudentStruct()
-		studReq:=StudentStruct()
-		Stud.EXPECT().CreateStudentInfo(studReq).Return(ExpectedRes,nil)
-
-		controller:=Controller{
+		ExpectedRes := StudentStruct()
+		studReq := StudentStruct()
+		Stud.EXPECT().CreateStudentInfo(studReq).Return(ExpectedRes, nil)
+		controller := Controller{
 			studentRepo: Stud,
 		}
 
+		ActualResp, err := controller.studentRepo.CreateStudentInfo(studReq)
 
-		ActualResp,err:=controller.studentRepo.CreateStudentInfo(studReq)
-
-		require.NoError(t,err)
+		require.NoError(t, err)
 		require.Equal(t, ExpectedRes, ActualResp)
 	})
 
 	t.Run("successfully remove student info", func(t *testing.T) {
-		ctrl:= gomock.NewController(t)
-		defer ctrl.Finish()
-
-		Stud:=NewMockStudentRepoOperations(ctrl)
-		id:=1
+		id := 1
 		Stud.EXPECT().RemoveStudentInfo(id).Return(nil)
-
-		controller:=Controller{
+		controller := Controller{
 			studentRepo: Stud,
 		}
 
-		err:=controller.studentRepo.RemoveStudentInfo(id)
+		err := controller.studentRepo.RemoveStudentInfo(id)
 
-		require.NoError(t,err)
+		require.NoError(t, err)
 	})
 
 	t.Run("successfully update student info", func(t *testing.T) {
-		ctrl:= gomock.NewController(t)
-		defer ctrl.Finish()
-
-		Stud:=NewMockStudentRepoOperations(ctrl)
-		id:=1
-		studReq:=StudentStruct()
-		ExpectedRes:=StudentStruct()
-		Stud.EXPECT().UpdateStudentInfo(id,studReq).Return(ExpectedRes,nil)
-
-		controller:=Controller{
+		id := 1
+		studReq := StudentStruct()
+		ExpectedRes := StudentStruct()
+		Stud.EXPECT().UpdateStudentInfo(id, studReq).Return(ExpectedRes, nil)
+		controller := Controller{
 			studentRepo: Stud,
 		}
 
-		ActualResp,err:=controller.studentRepo.UpdateStudentInfo(id,studReq)
+		ActualResp, err := controller.studentRepo.UpdateStudentInfo(id, studReq)
 
 		require.Equal(t, ExpectedRes, ActualResp)
-		require.NoError(t,err)
+		require.NoError(t, err)
 	})
 }
 
-func StudentsResponse() []model.Student{
+func StudentsResponse() []model.Student {
 	return []model.Student{
 		{
 			ID:       1,
@@ -118,7 +95,7 @@ func StudentsResponse() []model.Student{
 	}
 }
 
-func StudentStruct() model.Student{
+func StudentStruct() model.Student {
 	return model.Student{
 		ID:       1,
 		Name:     "test",
@@ -129,4 +106,3 @@ func StudentStruct() model.Student{
 		Rank:     1,
 	}
 }
-

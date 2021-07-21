@@ -9,22 +9,22 @@ import (
 	"os"
 )
 
-func init()  {
+func init() {
 	gotenv.Load()
 }
 
-func OpenDBConnection() *sql.DB{
+func OpenDBConnection() *sql.DB {
 	fmt.Println("Connecting to DB!!!")
 
-	pgURL,err :=pq.ParseURL(os.Getenv("SQL"))
-	if err!=nil{
+	pgURL, err := pq.ParseURL(os.Getenv("SQL"))
+	if err != nil {
 		fmt.Errorf("Failed to parse file", err)
 	}
 
 	db, _ := sql.Open("postgres", pgURL)
 
-	err= db.Ping()
-	if err!=nil{
+	err = db.Ping()
+	if err != nil {
 		fmt.Errorf("Failed to ping db", err)
 	}
 
