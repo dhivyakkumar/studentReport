@@ -4,15 +4,21 @@ import (
 	"database/sql"
 	"fmt"
 	"studentReports/src/model"
-	"studentReports/src/resultCalculator"
 )
+type Calculate interface {
+	CalculateRank(studList []model.Student) []model.Student
+}
 
 type StudentRepo struct {
 	db *sql.DB
+	cal Calculate
 }
 
-func NewStudentRepo(db *sql.DB) *StudentRepo {
-	return &StudentRepo{db: db}
+func NewStudentRepo(db *sql.DB, cal Calculate) *StudentRepo {
+	return &StudentRepo{
+		db: db,
+		cal: cal,
+	}
 }
 
 func (studRepo StudentRepo) GetStudents() ([]model.Student, error) {
@@ -87,7 +93,7 @@ func (studRepo StudentRepo) GetResultInfo() ([]model.Student, error) {
 		studList = append(studList, stud)
 	}
 
-	studData := resultCalculator.CalculateRank(studList)
+	studData := studRepo.cal.CalculateRank(studList)
 
 	err = studRepo.updateStudentResults(studData)
 	if err != nil {

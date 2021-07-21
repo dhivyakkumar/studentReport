@@ -5,7 +5,14 @@ import (
 	"studentReports/src/model"
 )
 
-func CalculateRank(studList []model.Student) []model.Student {
+type Calculator struct {
+}
+
+func NewCalculator()*Calculator{
+	return nil
+}
+
+func (c *Calculator)CalculateRank(studList []model.Student) []model.Student {
 	for _, stud := range studList {
 		stud.Total = stud.Subject1 + stud.Subject2
 		stud.Avg = float32(stud.Total / 2)

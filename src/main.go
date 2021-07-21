@@ -6,13 +6,15 @@ import (
 	"studentReports/src/controller"
 	"studentReports/src/driver"
 	"studentReports/src/repo"
+	"studentReports/src/resultCalculator"
 )
 
 func main() {
 
 	fmt.Println("Starting the server")
 	db := driver.OpenDBConnection()
-	studentRepo := repo.NewStudentRepo(db)
+	cal:=resultCalculator.NewCalculator()
+	studentRepo := repo.NewStudentRepo(db, cal)
 	c := controller.NewController(studentRepo)
 	r := controller.Router(c)
 
