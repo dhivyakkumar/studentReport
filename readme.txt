@@ -19,4 +19,10 @@ Student schema:
 6. Average int
 7. Rank int
 
+Build and run test:
+In order to build and run test
+make build
+make test
+
+
 
