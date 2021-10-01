@@ -21,7 +21,7 @@ func Test_Control(t *testing.T) {
 
 		ActualResp, err := controller.studentRepo.GetStudents()
 
-		require.NoError(t, err)
+		require.Error(t, err)
 		require.Equal(t, ExpectedRes, ActualResp)
 	})
 
