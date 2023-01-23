@@ -20,9 +20,9 @@ Student schema:
 7. Rank int
 
 Build and run test:
-In order to build and run test
-make build
-make test
+In order to build and run test,
+1. make build
+2. make test
 
 
 
